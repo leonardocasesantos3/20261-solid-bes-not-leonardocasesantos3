@@ -1,20 +1,13 @@
 package br.com.ucsal.olimpiadas;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class App {
 
-	static long proximoParticipanteId = 1;
-	static long proximaProvaId = 1;
-	static long proximaQuestaoId = 1;
-	static long proximaTentativaId = 1;
-
-	static final List<Participante> participantes = new ArrayList<>();
-	static final List<Prova> provas = new ArrayList<>();
-	static final List<Questao> questoes = new ArrayList<>();
-	static final List<Tentativa> tentativas = new ArrayList<>();
+	private static final Armazenamento<Participante> participantes = new ListaParticipantes();
+	private static final Armazenamento<Prova> provas = new ListaProvas();
+	private static final Armazenamento<Questao> questoes = new ListaQuestoes();
+	private static final Armazenamento<Tentativa> tentativas = new ListaTentativas();
 
 	private static final Scanner in = new Scanner(System.in);
 
@@ -59,11 +52,10 @@ public class App {
 		}
 
 		var p = new Participante();
-		p.setId(proximoParticipanteId++);
 		p.setNome(nome);
 		p.setEmail(email);
 
-		participantes.add(p);
+		participantes.adicionar(p);
 		System.out.println("Participante cadastrado: " + p.getId());
 	}
 
@@ -77,15 +69,14 @@ public class App {
 		}
 
 		var prova = new Prova();
-		prova.setId(proximaProvaId++);
 		prova.setTitulo(titulo);
 
-		provas.add(prova);
+		provas.adicionar(prova);
 		System.out.println("Prova criada: " + prova.getId());
 	}
 
 	static void cadastrarQuestao() {
-		if (provas.isEmpty()) {
+		if (provas.listarTodos().isEmpty()) {
 			System.out.println("não há provas cadastradas");
 			return;
 		}
@@ -114,24 +105,23 @@ public class App {
 		}
 
 		var q = new Questao();
-		q.setId(proximaQuestaoId++);
 		q.setProvaId(provaId);
 		q.setEnunciado(enunciado);
 		q.setAlternativas(alternativas);
 		q.setAlternativaCorreta(correta);
 
-		questoes.add(q);
+		questoes.adicionar(q);
 
 		System.out.println("Questão cadastrada: " + q.getId() + " (na prova " + provaId + ")");
 	}
 
 
 	static void aplicarProva() {
-		if (participantes.isEmpty()) {
+		if (participantes.listarTodos().isEmpty()) {
 			System.out.println("cadastre participantes primeiro");
 			return;
 		}
-		if (provas.isEmpty()) {
+		if (provas.listarTodos().isEmpty()) {
 			System.out.println("cadastre provas primeiro");
 			return;
 		}
@@ -144,7 +134,7 @@ public class App {
 		if (provaId == null)
 			return;
 
-		var questoesDaProva = questoes.stream().filter(q -> q.getProvaId() == provaId).toList();
+		var questoesDaProva = questoes.listarTodos().stream().filter(q -> q.getProvaId() == provaId).toList();
 
 		if (questoesDaProva.isEmpty()) {
 			System.out.println("esta prova não possui questões cadastradas");
@@ -152,7 +142,6 @@ public class App {
 		}
 
 		var tentativa = new Tentativa();
-		tentativa.setId(proximaTentativaId++);
 		tentativa.setParticipanteId(participanteId);
 		tentativa.setProvaId(provaId);
 
@@ -186,7 +175,7 @@ public class App {
 			tentativa.getRespostas().add(r);
 		}
 
-		tentativas.add(tentativa);
+		tentativas.adicionar(tentativa);
 
 		int nota = tentativa.calcularNota();
 		System.out.println("\n--- Fim da Prova ---");
@@ -195,7 +184,7 @@ public class App {
 
 	static void listarTentativas() {
 		System.out.println("\n--- Tentativas ---");
-		for (var t : tentativas) {
+		for (var t : tentativas.listarTodos()) {
 			System.out.printf("#%d | participante=%d | prova=%d | nota=%d/%d%n", t.getId(), t.getParticipanteId(),
 					t.getProvaId(), t.calcularNota(), t.getRespostas().size());
 		}
@@ -204,14 +193,14 @@ public class App {
 
 	static Long escolherParticipante() {
 		System.out.println("\nParticipantes:");
-		for (var p : participantes) {
+		for (var p : participantes.listarTodos()) {
 			System.out.printf("  %d) %s%n", p.getId(), p.getNome());
 		}
 		System.out.print("Escolha o id do participante: ");
 
 		try {
 			long id = Long.parseLong(in.nextLine());
-			boolean existe = participantes.stream().anyMatch(p -> p.getId() == id);
+			boolean existe = participantes.buscarPorId(id) != null;
 			if (!existe) {
 				System.out.println("id inválido");
 				return null;
@@ -225,14 +214,14 @@ public class App {
 
 	static Long escolherProva() {
 		System.out.println("\nProvas:");
-		for (var p : provas) {
+		for (var p : provas.listarTodos()) {
 			System.out.printf("  %d) %s%n", p.getId(), p.getTitulo());
 		}
 		System.out.print("Escolha o id da prova: ");
 
 		try {
 			long id = Long.parseLong(in.nextLine());
-			boolean existe = provas.stream().anyMatch(p -> p.getId() == id);
+			boolean existe = provas.buscarPorId(id) != null;
 			if (!existe) {
 				System.out.println("id inválido");
 				return null;
@@ -247,12 +236,10 @@ public class App {
 	static void seed() {
 
 		var prova = new Prova();
-		prova.setId(proximaProvaId++);
 		prova.setTitulo("Olimpíada 2026 • Nível 1 • Prova A");
-		provas.add(prova);
+		provas.adicionar(prova);
 
 		var q1 = new Questao();
-		q1.setId(proximaQuestaoId++);
 		q1.setProvaId(prova.getId());
 
 		q1.setEnunciado("""
@@ -267,6 +254,6 @@ public class App {
 
 		q1.setAlternativaCorreta('C');
 
-		questoes.add(q1);
+		questoes.adicionar(q1);
 	}
 }
