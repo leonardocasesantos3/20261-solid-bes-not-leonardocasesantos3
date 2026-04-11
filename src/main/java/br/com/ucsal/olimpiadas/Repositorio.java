@@ -2,7 +2,7 @@ package br.com.ucsal.olimpiadas;
 
 import java.util.List;
 
-public interface Armazenamento<T> {
+public interface Repositorio<T> {
     void adicionar(T entidade);
     List<T> listarTodos();
     T buscarPorId(long id);
