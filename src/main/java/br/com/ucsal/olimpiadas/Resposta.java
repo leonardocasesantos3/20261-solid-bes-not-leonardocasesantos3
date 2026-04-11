@@ -3,7 +3,7 @@ package br.com.ucsal.olimpiadas;
 public class Resposta {
 
 	private long questaoId;
-	private char alternativaMarcada;
+	private String valorInformado;
 	private boolean correta;
 
 	public long getQuestaoId() {
@@ -14,12 +14,12 @@ public class Resposta {
 		this.questaoId = questaoId;
 	}
 
-	public char getAlternativaMarcada() {
-		return alternativaMarcada;
+	public String getValorInformado() {
+		return valorInformado;
 	}
 
-	public void setAlternativaMarcada(char alternativaMarcada) {
-		this.alternativaMarcada = alternativaMarcada;
+	public void setValorInformado(String valorInformado) {
+		this.valorInformado = valorInformado;
 	}
 
 	public boolean isCorreta() {
