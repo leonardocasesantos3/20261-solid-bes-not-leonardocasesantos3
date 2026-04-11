@@ -3,7 +3,7 @@ package br.com.ucsal.olimpiadas;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListaQuestoes implements Armazenamento<Questao> {
+public class ListaQuestoes implements Repositorio<Questao> {
     private long proximoId = 1;
     private final List<Questao> questoes = new ArrayList<>();
 

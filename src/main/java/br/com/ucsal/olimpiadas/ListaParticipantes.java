@@ -3,7 +3,7 @@ package br.com.ucsal.olimpiadas;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListaParticipantes implements Armazenamento<Participante> {
+public class ListaParticipantes implements Repositorio<Participante> {
     private long proximoId = 1;
     private final List<Participante> participantes = new ArrayList<>();
 
